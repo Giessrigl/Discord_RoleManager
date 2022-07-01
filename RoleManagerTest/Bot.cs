@@ -1,20 +1,41 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
-using Microsoft.Extensions.Configuration;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Newtonsoft.Json;
+using RoleManagerTest.Commands;
 using System.Text;
 
 namespace RoleManager
 {
     public class Bot
     {
-        private string Path = @"C:\Users\Christian\Documents\DiscordBot\RoleManagerTest\RoleManagerTest" + "/config.json";
+        private string Path = @"C:\Users\Christian\Documents\DiscordBot\RoleManager\Discord_RoleManager\RoleManagerTest" + "/config.json";
+
+        internal Dictionary<string, string> configJson;
+        internal Dictionary<string, string> ConfigJson
+        {
+            get
+            {
+                return this.configJson;
+            }
+            private set
+            {
+                this.configJson = value ?? throw new ArgumentNullException("config.json not deserializeable to Dictionary<string, string>.");
+            }
+        }
 
         public DiscordClient Client
         {
             get;
             private set;
+        }
+
+        public InteractivityExtension Interactivity 
+        { 
+            get; 
+            private set; 
         }
 
         public CommandsNextExtension Commands
@@ -23,7 +44,7 @@ namespace RoleManager
             private set;
         }
 
-        private async Task<DiscordClient> ConfigureBot(string configPath)
+        private async Task<DiscordClient> ConfigureAndConnectBot(string configPath)
         {
             var json = string.Empty;
             using (var fs = File.OpenRead(configPath))
@@ -32,37 +53,56 @@ namespace RoleManager
                 json = await sr.ReadToEndAsync().ConfigureAwait(false);
             }
 
-            var configJson = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            if (configJson == null)
-                throw new Exception("config.json not deserializeable to Dictionary<string, string>.");
+            this.ConfigJson = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 
             var config = new DiscordConfiguration
             {
-                Token = configJson.First(x => x.Key == "token").Value,
+                Token = this.ConfigJson.First(x => x.Key == "token").Value,
                 TokenType = TokenType.Bot,
-                AutoReconnect = true
+                AutoReconnect = true,
+                Intents = DiscordIntents.All
             };
 
             var client = new DiscordClient(config);
 
+            return client;
+        }
+
+        private async Task ConfigureCommands(DiscordClient client)
+        {
             var commandsConfig = new CommandsNextConfiguration()
             {
-                StringPrefixes = new string[] { configJson.First(x => x.Key == "prefix").Value },
+                StringPrefixes = new string[] { this.ConfigJson.First(x => x.Key == "prefix").Value },
                 EnableDms = false,
-                EnableMentionPrefix = true
+                EnableMentionPrefix = true,
+                DmHelp = true
             };
 
             this.Commands = client.UseCommandsNext(commandsConfig);
-            return client;
+
+            this.Commands.RegisterCommands<AssignClassCommand>();
+            this.Commands.RegisterCommands<AssignRoleCommand>();
+            this.Commands.RegisterCommands<PurgeCommand>();
+            this.Commands.RegisterCommands<ListCommandsCommand>();
+        }
+
+        private async Task ConfigureInteractivity(DiscordClient client)
+        {
+            client.UseInteractivity(new InteractivityConfiguration
+            {
+                 ResponseBehavior = DSharpPlus.Interactivity.Enums.InteractionResponseBehavior.Ignore
+            });
         }
 
         public async Task RunAsync()
         {
-            this.Client = await ConfigureBot(this.Path);
+            var client = await ConfigureAndConnectBot(this.Path);
+            await ConfigureInteractivity(client);
+            await ConfigureCommands(client);
+            
+            client.Ready += OnClientReady;
 
-            Client.Ready += OnClientReady;
-
-            await Client.ConnectAsync();
+            await client.ConnectAsync();
 
             await Task.Delay(-1);
         }
