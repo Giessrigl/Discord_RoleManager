@@ -99,21 +99,7 @@ namespace RoleManagerTest.Commands
                 {
                     await member.RevokeRoleAsync(args.Guild.GetRole(userWoWRole.Id));
                 }
-
-                await this.SendAssignmentMessage(args);
             };
-        }
-
-        private async Task SendAssignmentMessage(MessageReactionAddEventArgs args)
-        {
-            var wowClass = WoW.Classes.FirstOrDefault(c => args.Emoji.Id == c.EmojiID);
-            if (wowClass == default)
-                return;
-
-            var messagenumber = rndm.Next(wowClass.WelcomeMessages.Count);
-            var message = wowClass.WelcomeMessages[messagenumber];
-
-            await args.Channel.SendMessageAsync($"{args.User.Username} {message}").ConfigureAwait(false);
         }
 
         private async Task CreateClassReactions(CommandContext ctx, DiscordMessage message)

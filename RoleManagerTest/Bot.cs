@@ -13,7 +13,7 @@ namespace RoleManager
     {
         private string Path = @"C:\Users\Christian\Documents\DiscordBot\RoleManager\Discord_RoleManager\RoleManagerTest" + "/config.json";
 
-        internal Dictionary<string, string> configJson;
+        private Dictionary<string, string> configJson;
         internal Dictionary<string, string> ConfigJson
         {
             get
@@ -57,7 +57,7 @@ namespace RoleManager
 
             var config = new DiscordConfiguration
             {
-                Token = this.ConfigJson.First(x => x.Key == "token").Value,
+                Token = this.ConfigJson?.First(x => x.Key == "token").Value,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
                 Intents = DiscordIntents.All
@@ -84,6 +84,7 @@ namespace RoleManager
             this.Commands.RegisterCommands<AssignRoleCommand>();
             this.Commands.RegisterCommands<PurgeCommand>();
             this.Commands.RegisterCommands<ListCommandsCommand>();
+            this.Commands.RegisterCommands<AssignCharacterCommand>();
         }
 
         private async Task ConfigureInteractivity(DiscordClient client)

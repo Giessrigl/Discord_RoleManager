@@ -17,7 +17,8 @@ namespace RoleManagerTest.Commands
                 Statics.GetCommandDescription(typeof(AssignClassCommand), "AssignClass"),
                 Statics.GetCommandDescription(typeof(AssignClassCommand), "AssignClasses"),
                 Statics.GetCommandDescription(typeof(AssignRoleCommand), "AssignRole"),
-                Statics.GetCommandDescription(typeof(AssignRoleCommand), "AssignRoles")
+                Statics.GetCommandDescription(typeof(AssignRoleCommand), "AssignRoles"),
+                Statics.GetCommandDescription(typeof(AssignCharacterCommand), "AssignCharacter")
             };
         }
 

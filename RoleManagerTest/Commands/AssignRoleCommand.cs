@@ -40,7 +40,7 @@ namespace RoleManagerTest.Commands
                 return;
             }
 
-            if (!userWoWClass.WoWRolesNames.Exists(role => role == roleToassign.Name))
+            if (!userWoWClass.WoWRolesNames.ContainsKey(roleToassign.Name))
             {
                 Console.WriteLine($"{ctx.User.Username} can not have the role {roleToassign.Name} because his class is a {userWoWClass.Name}!");
                 return;
@@ -89,7 +89,7 @@ namespace RoleManagerTest.Commands
                     return;
                 }
                     
-                if (!userWoWClass.WoWRolesNames.Exists(role => role == roleToassign.Name))
+                if (!userWoWClass.WoWRolesNames.ContainsKey(roleToassign.Name))
                 {
                     Console.WriteLine($"{args.User.Username} can not have the role {roleToassign.Name} because his class is a {userWoWClass.Name}!");
                     return;
