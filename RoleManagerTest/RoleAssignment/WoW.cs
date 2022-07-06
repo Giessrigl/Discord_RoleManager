@@ -12,7 +12,7 @@ namespace RoleManagerTest
         public static List<WoWClass> Classes = new List<WoWClass>()
             {
                 new WoWClass(
-                    "DeathKnight",
+                    "Death Knight",
                     991105618679185438,
                     992063098435416064,
                     new Dictionary<string, string>() // wow role name
@@ -22,7 +22,7 @@ namespace RoleManagerTest
                         {"Unholy" ,"Melee" }
                     }),
                 new WoWClass(
-                    "DemonHunter",
+                    "Demon Hunter",
                     991105736631386154,
                     992063056467202058,
                     new Dictionary<string, string>() // wow role name
@@ -44,7 +44,7 @@ namespace RoleManagerTest
                 new WoWClass(
                     "Evoker",
                     991105930366296094,
-                    default,
+                    994344346474270740,
                     new Dictionary<string, string>() // wow role name
                     {
                        {"Devastation", "Range" },

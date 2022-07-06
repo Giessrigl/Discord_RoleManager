@@ -1,4 +1,6 @@
-﻿using DSharpPlus;
+﻿using DatabaseClasses;
+using DatabaseClasses.Models;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -8,7 +10,14 @@ namespace RoleManagerTest.Commands
 {
     class AssignCharacterCommand : BaseCommandModule
     {
+        private readonly UserClassContext _userClassContext;
+
         private readonly HttpClient client = new HttpClient();
+
+        public AssignCharacterCommand(UserClassContext context)
+        {
+            this._userClassContext = context;
+        }
 
         [Command("MyNameIs")]
         [Aliases("Iam")]
@@ -27,6 +36,12 @@ namespace RoleManagerTest.Commands
             if (ctx.Channel.Id != Statics.classes_and_roles_ChannelID)
                 return;
 
+            if (await this.IsCharacterAlreadyRegistered(characterName, serverName, region))
+            {
+                await ctx.Channel.SendMessageAsync("The character is already registered.").ConfigureAwait(false);
+                return;
+            }
+                
             var characterInfo = await GetCharacterInfo(characterName, serverName, region);
             if (characterInfo == null)
                 return;
@@ -45,19 +60,54 @@ namespace RoleManagerTest.Commands
             if (member == null)
                 return;
 
+            if (! await this.AddCharacterToUser(ctx.User.Id, characterName, serverName, region))
+                return;
+
             try
             {
                 await RemoveClassRoles(ctx, member);
                 await member.GrantRoleAsync(classToAssign);
                 await member.GrantRoleAsync(roleToAssign);
 
-                var embed = this.BuildDiscordEmbed(ctx, characterInfo);
+                var embed = this.BuildCharacterDiscordEmbed(ctx, $"{ctx.User.Username} is now: {characterName}!", characterInfo);
 
                 await ctx.Channel.SendMessageAsync(embed).ConfigureAwait(false);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        [Command("GetChar")]
+        [Aliases("WhoamI?")]
+        [RequireGuild]
+        [RequireBotPermissions(Permissions.SendMessages)]
+        [Description("")]
+        public async Task GetCharacter(CommandContext ctx)
+        {
+            var WoWChar = new UserWoWChar();
+            WoWChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == ctx.User.Id);
+           
+            if (WoWChar == null)
+                return;
+                
+            var charInfo = await this.GetCharacterInfo(WoWChar.CharName, WoWChar.ServerName, WoWChar.Region);
+
+            if (charInfo == null)
+                return;
+
+            var characterName = charInfo.First(x => x.Key == "name").Value;
+
+            try
+            {
+                var embed = this.BuildCharacterDiscordEmbed(ctx, $"{ctx.User.Username}, you are {characterName}!", charInfo);
+
+                await ctx.Channel.SendMessageAsync(embed).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 
@@ -133,7 +183,7 @@ namespace RoleManagerTest.Commands
             }
         }
 
-        private DiscordEmbed BuildDiscordEmbed(CommandContext ctx, Dictionary<string, string> characterInfo)
+        private DiscordEmbed BuildCharacterDiscordEmbed(CommandContext ctx, string title, Dictionary<string, string> characterInfo)
         {
             // get values
             var characterName = characterInfo.First(x => x.Key == "name").Value;
@@ -143,6 +193,7 @@ namespace RoleManagerTest.Commands
             var className = characterInfo.First(x => x.Key == "class").Value;
             var specName = characterInfo.First(x => x.Key == "active_spec_name").Value;
             var realm = characterInfo.First(x => x.Key == "realm").Value;
+            var charPortrait = characterInfo.First(x => x.Key == "thumbnail_url").Value;
 
             var profileUrl = characterInfo.First(x => x.Key == "profile_url").Value;
 
@@ -158,9 +209,10 @@ namespace RoleManagerTest.Commands
             DiscordEmbedBuilder blueprint = new DiscordEmbedBuilder();
 
             blueprint.Color = classColor;
-            blueprint.Title = $"{ctx.User.Username} is now: {characterName}!";
+            blueprint.Title = title;
             blueprint.WithThumbnail(classEmoji.Url);
 
+            blueprint.WithImageUrl(charPortrait);
             blueprint.AddField("CharacterInfo",
                 $"Realm: {realm} \n" +
                 $"Faction: {char.ToUpper(faction[0])}{faction.Substring(1)} \n" +
@@ -175,6 +227,48 @@ namespace RoleManagerTest.Commands
                 blueprint.AddField("Check him out at:", $"{profileUrl}");
 
             return blueprint.Build();
+        }
+
+        private async Task<bool> AddCharacterToUser(ulong userID, string charName, string serverName, string region)
+        {
+            try
+            {
+                var wowChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == userID);
+                if (wowChar == null)
+                {
+                    await this._userClassContext.AddAsync(new UserWoWChar()
+                    {
+                        DiscordID = userID,
+                        CharName = charName,
+                        ServerName = serverName,
+                        Region = region
+                    }).ConfigureAwait(false);
+                }
+                else
+                {
+                    wowChar.CharName = charName;
+                    wowChar.ServerName = serverName;
+                    wowChar.Region = region;
+
+                    await Task.FromResult(this._userClassContext.Update(wowChar)).ConfigureAwait(false);
+                }
+
+                await this._userClassContext.SaveChangesAsync().ConfigureAwait(false);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        private async Task<bool> IsCharacterAlreadyRegistered(string charName, string serverName, string region)
+        {
+            return await Task.FromResult(this._userClassContext.UserClasses.FirstOrDefault(x =>
+                x.CharName == charName &&
+                x.ServerName == serverName &&
+                x.Region == region
+            ) != null);
         }
     }
 }

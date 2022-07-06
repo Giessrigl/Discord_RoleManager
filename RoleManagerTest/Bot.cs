@@ -44,13 +44,24 @@ namespace RoleManager
             private set;
         }
 
-        private async Task<DiscordClient> ConfigureAndConnectBot(string configPath)
+        public Bot(IServiceProvider services)
+        {
+            var client = ConfigureAndConnectBot(this.Path);
+            ConfigureInteractivity(client);
+            ConfigureCommands(client, services);
+
+            client.Ready += OnClientReady;
+
+            client.ConnectAsync();
+        }
+
+        private DiscordClient ConfigureAndConnectBot(string configPath)
         {
             var json = string.Empty;
             using (var fs = File.OpenRead(configPath))
             using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
             {
-                json = await sr.ReadToEndAsync().ConfigureAwait(false);
+                json = sr.ReadToEnd();
             }
 
             this.ConfigJson = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
@@ -68,14 +79,15 @@ namespace RoleManager
             return client;
         }
 
-        private async Task ConfigureCommands(DiscordClient client)
+        private void ConfigureCommands(DiscordClient client, IServiceProvider services)
         {
             var commandsConfig = new CommandsNextConfiguration()
             {
                 StringPrefixes = new string[] { this.ConfigJson.First(x => x.Key == "prefix").Value },
                 EnableDms = false,
                 EnableMentionPrefix = true,
-                DmHelp = true
+                DmHelp = true,
+                Services = services
             };
 
             this.Commands = client.UseCommandsNext(commandsConfig);
@@ -85,27 +97,15 @@ namespace RoleManager
             this.Commands.RegisterCommands<PurgeCommand>();
             this.Commands.RegisterCommands<ListCommandsCommand>();
             this.Commands.RegisterCommands<AssignCharacterCommand>();
+            this.Commands.RegisterCommands<RankingCommand>();
         }
 
-        private async Task ConfigureInteractivity(DiscordClient client)
+        private void ConfigureInteractivity(DiscordClient client)
         {
             client.UseInteractivity(new InteractivityConfiguration
             {
                  ResponseBehavior = DSharpPlus.Interactivity.Enums.InteractionResponseBehavior.Ignore
             });
-        }
-
-        public async Task RunAsync()
-        {
-            var client = await ConfigureAndConnectBot(this.Path);
-            await ConfigureInteractivity(client);
-            await ConfigureCommands(client);
-            
-            client.Ready += OnClientReady;
-
-            await client.ConnectAsync();
-
-            await Task.Delay(-1);
         }
 
         private Task OnClientReady(object sender, ReadyEventArgs e)

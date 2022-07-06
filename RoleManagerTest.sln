@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoleManagerTest", "RoleManagerTest\RoleManagerTest.csproj", "{488A66DD-58D8-4A0C-AEC3-D5088851F4F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoleManagerTest", "RoleManagerTest\RoleManagerTest.csproj", "{488A66DD-58D8-4A0C-AEC3-D5088851F4F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordBot.Migrations", "DiscordBot.Migrations\DiscordBot.Migrations.csproj", "{6973CF68-6771-4764-8C8A-31A358C55394}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseClasses", "DatabaseClasses\DatabaseClasses.csproj", "{8C2FE595-B732-4864-A1B5-4D6323ABE133}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{488A66DD-58D8-4A0C-AEC3-D5088851F4F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{488A66DD-58D8-4A0C-AEC3-D5088851F4F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{488A66DD-58D8-4A0C-AEC3-D5088851F4F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6973CF68-6771-4764-8C8A-31A358C55394}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6973CF68-6771-4764-8C8A-31A358C55394}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6973CF68-6771-4764-8C8A-31A358C55394}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6973CF68-6771-4764-8C8A-31A358C55394}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C2FE595-B732-4864-A1B5-4D6323ABE133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C2FE595-B732-4864-A1B5-4D6323ABE133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C2FE595-B732-4864-A1B5-4D6323ABE133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C2FE595-B732-4864-A1B5-4D6323ABE133}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
