@@ -11,21 +11,6 @@ namespace RoleManager
 {
     public class Bot
     {
-        private string Path = @"C:\Users\Christian\Documents\DiscordBot\RoleManager\Discord_RoleManager\RoleManagerTest" + "/config.json";
-
-        private Dictionary<string, string> configJson;
-        internal Dictionary<string, string> ConfigJson
-        {
-            get
-            {
-                return this.configJson;
-            }
-            private set
-            {
-                this.configJson = value ?? throw new ArgumentNullException("config.json not deserializeable to Dictionary<string, string>.");
-            }
-        }
-
         public DiscordClient Client
         {
             get;
@@ -44,31 +29,27 @@ namespace RoleManager
             private set;
         }
 
-        public Bot(IServiceProvider services)
+        public Bot(IServiceProvider services, ConfigurationManager config)
         {
-            var client = ConfigureAndConnectBot(this.Path);
+            var token = config.GetValue<string>("token");
+            var prefix = config.GetValue<string>("prefix");
+
+            var client = ConfigureAndConnectBot(token);
             ConfigureInteractivity(client);
-            ConfigureCommands(client, services);
+            ConfigureCommands(client, services, prefix);
 
             client.Ready += OnClientReady;
 
             client.ConnectAsync();
+
+            this.Client = client;
         }
 
-        private DiscordClient ConfigureAndConnectBot(string configPath)
+        private DiscordClient ConfigureAndConnectBot(string token)
         {
-            var json = string.Empty;
-            using (var fs = File.OpenRead(configPath))
-            using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
-            {
-                json = sr.ReadToEnd();
-            }
-
-            this.ConfigJson = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-
             var config = new DiscordConfiguration
             {
-                Token = this.ConfigJson?.First(x => x.Key == "token").Value,
+                Token = token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
                 Intents = DiscordIntents.All
@@ -79,11 +60,11 @@ namespace RoleManager
             return client;
         }
 
-        private void ConfigureCommands(DiscordClient client, IServiceProvider services)
+        private void ConfigureCommands(DiscordClient client, IServiceProvider services, string prefix)
         {
             var commandsConfig = new CommandsNextConfiguration()
             {
-                StringPrefixes = new string[] { this.ConfigJson.First(x => x.Key == "prefix").Value },
+                StringPrefixes = new string[] { prefix },
                 EnableDms = false,
                 EnableMentionPrefix = true,
                 DmHelp = true,
@@ -102,7 +83,7 @@ namespace RoleManager
 
         private void ConfigureInteractivity(DiscordClient client)
         {
-            client.UseInteractivity(new InteractivityConfiguration
+            this.Interactivity = client.UseInteractivity(new InteractivityConfiguration
             {
                  ResponseBehavior = DSharpPlus.Interactivity.Enums.InteractionResponseBehavior.Ignore
             });

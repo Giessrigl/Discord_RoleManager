@@ -5,18 +5,22 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
+using RoleManagerTest.Services.Interfaces;
 
 namespace RoleManagerTest.Commands
 {
     class AssignCharacterCommand : BaseCommandModule
     {
-        private readonly UserClassContext _userClassContext;
+        //private readonly UserClassContext _userClassContext;
+
+        private readonly IStorageService<UserWoWChar> _storageService;
 
         private readonly HttpClient client = new HttpClient();
 
-        public AssignCharacterCommand(UserClassContext context)
+        public AssignCharacterCommand(IStorageService<UserWoWChar> storageService) //UserClassContext context)
         {
-            this._userClassContext = context;
+            this._storageService = storageService;
+            //this._userClassContext = context;
         }
 
         [Command("MyNameIs")]
@@ -87,8 +91,9 @@ namespace RoleManagerTest.Commands
         public async Task GetCharacter(CommandContext ctx)
         {
             var WoWChar = new UserWoWChar();
-            WoWChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == ctx.User.Id);
-           
+            //WoWChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == ctx.User.Id);
+            WoWChar = this._storageService.Storage.FirstOrDefault(x => x.DiscordID == ctx.User.Id);
+
             if (WoWChar == null)
                 return;
                 
@@ -233,16 +238,25 @@ namespace RoleManagerTest.Commands
         {
             try
             {
-                var wowChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == userID);
+                //var wowChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == userID);
+                var wowChar = this._storageService.Storage.FirstOrDefault(x => x.DiscordID == userID);
                 if (wowChar == null)
                 {
-                    await this._userClassContext.AddAsync(new UserWoWChar()
+                    //await this._userClassContext.AddAsync(new UserWoWChar()
+                    //{
+                    //    DiscordID = userID,
+                    //    CharName = charName,
+                    //    ServerName = serverName,
+                    //    Region = region
+                    //}).ConfigureAwait(false);
+
+                    this._storageService.Storage.Add(new UserWoWChar()
                     {
                         DiscordID = userID,
                         CharName = charName,
                         ServerName = serverName,
                         Region = region
-                    }).ConfigureAwait(false);
+                    });
                 }
                 else
                 {
@@ -250,21 +264,27 @@ namespace RoleManagerTest.Commands
                     wowChar.ServerName = serverName;
                     wowChar.Region = region;
 
-                    await Task.FromResult(this._userClassContext.Update(wowChar)).ConfigureAwait(false);
+                    //await Task.FromResult(this._userClassContext.Update(wowChar)).ConfigureAwait(false);
                 }
 
-                await this._userClassContext.SaveChangesAsync().ConfigureAwait(false);
-                return true;
+                // await this._userClassContext.SaveChangesAsync().ConfigureAwait(false);
+                return await Task.FromResult(true);
             }
             catch (Exception ex)
             {
-                return false;
+                return await Task.FromResult(false);
             }
         }
 
         private async Task<bool> IsCharacterAlreadyRegistered(string charName, string serverName, string region)
         {
-            return await Task.FromResult(this._userClassContext.UserClasses.FirstOrDefault(x =>
+            //return await Task.FromResult(this._userClassContext.UserClasses.FirstOrDefault(x =>
+            //    x.CharName == charName &&
+            //    x.ServerName == serverName &&
+            //    x.Region == region
+            //) != null);
+
+            return await Task.FromResult(this._storageService.Storage.FirstOrDefault(x =>
                 x.CharName == charName &&
                 x.ServerName == serverName &&
                 x.Region == region

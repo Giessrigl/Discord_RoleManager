@@ -1,22 +1,27 @@
 ﻿using DatabaseClasses;
+using DatabaseClasses.Models;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
 using RoleManagerTest.Ranking;
+using RoleManagerTest.Services.Interfaces;
 
 namespace RoleManagerTest.Commands
 {
     public class RankingCommand : BaseCommandModule
     {
-        private readonly UserClassContext _userClassContext;
+        //private readonly UserClassContext _userClassContext;
+
+        private readonly IStorageService<UserWoWChar> _storageService;
 
         private readonly HttpClient client = new HttpClient();
 
-        public RankingCommand(UserClassContext context)
+        public RankingCommand(IStorageService<UserWoWChar> storageService) //UserClassContext context)
         {
-            this._userClassContext = context;
+            _storageService = storageService;
+            //this._userClassContext = context;
         }
 
         [Command("ScoreRanking")]
@@ -48,7 +53,8 @@ namespace RoleManagerTest.Commands
 
         private async Task<List<UserRanking>> GetRankingList(CommandContext ctx, bool compareByScore)
         {
-            var userClasses = this._userClassContext.UserClasses.ToList();
+            // var userClasses = this._userClassContext.UserClasses.ToList();
+            var userClasses = this._storageService.Storage;
 
             List<UserRanking> rankings = new List<UserRanking>();
             foreach (var userClass in userClasses)
