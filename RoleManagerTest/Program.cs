@@ -38,9 +38,13 @@ class Programm
 
         var bot = new Bot(serviceProvider, builder.Configuration);
         builder.Services.AddSingleton(bot);
-        
+
+        Console.WriteLine("Bot is running");
+
         var app = builder.Build();
         await app.RunAsync();
+
+        Console.WriteLine("Bot terminated.");
     }
 
     //public static IHostBuilder CreateHostBuilder(string[] args) =>

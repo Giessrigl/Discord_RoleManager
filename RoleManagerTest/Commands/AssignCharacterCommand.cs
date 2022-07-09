@@ -34,6 +34,8 @@ namespace RoleManagerTest.Commands
             [Description("The name of the server.")] string serverName, 
             [Description("The name of the region.")]string region = "eu")
         {
+            Console.WriteLine("assing character");
+
             if (string.IsNullOrWhiteSpace(characterName) || string.IsNullOrWhiteSpace(serverName))
                 return;
 
@@ -90,6 +92,8 @@ namespace RoleManagerTest.Commands
         [Description("")]
         public async Task GetCharacter(CommandContext ctx)
         {
+            Console.WriteLine("get character");
+
             var WoWChar = new UserWoWChar();
             //WoWChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == ctx.User.Id);
             WoWChar = this._storageService.Storage.FirstOrDefault(x => x.DiscordID == ctx.User.Id);
