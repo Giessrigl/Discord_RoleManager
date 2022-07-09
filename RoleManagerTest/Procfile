@@ -1,1 +1,1 @@
-Worker: start ./bin/Debug/net6.0/RoleManagerTest.exe
+Worker: node Program
