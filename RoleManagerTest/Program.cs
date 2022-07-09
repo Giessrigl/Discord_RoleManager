@@ -37,12 +37,11 @@ class Programm
         //    options.RetainedFileCountLimit = 10;
         //});
 
-        using (ServiceProvider serviceProvider = builder.Services.BuildServiceProvider())
-        {
-            var bot = new Bot(serviceProvider, builder.Configuration);
-            builder.Services.AddSingleton(bot);
-        }
+        ServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
 
+        var bot = new Bot(serviceProvider, builder.Configuration);
+        builder.Services.AddSingleton(bot);
+        
         var app = builder.Build();
         await app.RunAsync();
     }
