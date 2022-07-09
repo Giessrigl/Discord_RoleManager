@@ -1,1 +1,1 @@
-Worker: node Program
+Worker: node ./RoleManagerTest/Program
