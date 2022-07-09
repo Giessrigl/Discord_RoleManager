@@ -34,15 +34,23 @@ namespace RoleManager
             var token = Environment.GetEnvironmentVariable("Token");
             var prefix = Environment.GetEnvironmentVariable("Prefix");
 
-            var client = ConfigureAndConnectBot(token);
-            ConfigureInteractivity(client);
-            ConfigureCommands(client, services, prefix);
+            try
+            {
+               var client = ConfigureAndConnectBot(token);
+                ConfigureInteractivity(client);
+                ConfigureCommands(client, services, prefix);
 
-            client.Ready += OnClientReady;
+                client.Ready += OnClientReady;
 
-            client.ConnectAsync();
+                client.ConnectAsync();
 
-            this.Client = client;
+                this.Client = client;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+                return;
+            }
         }
 
         private DiscordClient ConfigureAndConnectBot(string token)
