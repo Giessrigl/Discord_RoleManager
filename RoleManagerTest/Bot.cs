@@ -34,9 +34,21 @@ namespace RoleManager
             var token = Environment.GetEnvironmentVariable("Token");
             var prefix = Environment.GetEnvironmentVariable("Prefix");
 
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("token is null");
+            }
+
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("prefix is null");
+            }
+
             try
             {
-               var client = ConfigureAndConnectBot(token);
+                var client = ConfigureAndConnectBot(token);
                 ConfigureInteractivity(client);
                 ConfigureCommands(client, services, prefix);
 
