@@ -13,9 +13,6 @@ class Programm
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Configuration.AddJsonFile("config.json");
-        var connString = builder.Configuration.GetConnectionString("databaseConnectionString");
-
         builder.Services.AddSingleton<IStorageService<UserWoWChar>, UserClassStorageService<UserWoWChar>>();
 
         //builder.Services.AddDbContext<UserClassContext>(options =>

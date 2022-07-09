@@ -31,8 +31,8 @@ namespace RoleManager
 
         public Bot(IServiceProvider services, ConfigurationManager config)
         {
-            var token = config.GetValue<string>("token");
-            var prefix = config.GetValue<string>("prefix");
+            var token = Environment.GetEnvironmentVariable("Token");
+            var prefix = Environment.GetEnvironmentVariable("Prefix");
 
             var client = ConfigureAndConnectBot(token);
             ConfigureInteractivity(client);
