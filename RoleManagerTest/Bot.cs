@@ -99,6 +99,7 @@ namespace RoleManager
             this.Commands.RegisterCommands<ListCommandsCommand>();
             this.Commands.RegisterCommands<AssignCharacterCommand>();
             this.Commands.RegisterCommands<RankingCommand>();
+            this.Commands.RegisterCommands<GetMPlusAffixesCommand>();
         }
 
         private void ConfigureInteractivity(DiscordClient client)
