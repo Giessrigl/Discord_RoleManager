@@ -11,9 +11,20 @@ class Programm
 {
     public static async Task Main(string[] args)
     {
+        //EnvironmentVariables envVariables = new EnvironmentVariables();
+        //envVariables.SetEnvironmentVariables();
+
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddSingleton<IStorageService<UserWoWChar>, UserClassStorageService<UserWoWChar>>();
+        builder.Services.AddTransient<HttpClient>();
+
+        OAuthExtensions.AddOAuth(new Microsoft.AspNetCore.Authentication.AuthenticationBuilder(builder.Services), "", options =>
+        {
+            options.ClientId = Environment.GetEnvironmentVariable("WoWClientID");
+            options.ClientSecret = Environment.GetEnvironmentVariable("WoWClientSecret");
+        });
+        builder.Services.AddAuthentication();
 
         //builder.Services.AddDbContext<UserClassContext>(options =>
         //{
@@ -53,5 +64,7 @@ class Programm
     //        {
     //            webBuilder.UseStartup<Startup>();
     //        });
+
+    
 }
 

@@ -15,10 +15,11 @@ namespace RoleManagerTest.Commands
 
         private readonly IStorageService<UserWoWChar> _storageService;
 
-        private readonly HttpClient client = new HttpClient();
+        private readonly HttpClient _client;
 
-        public AssignCharacterCommand(IStorageService<UserWoWChar> storageService) //UserClassContext context)
+        public AssignCharacterCommand(HttpClient client, IStorageService<UserWoWChar> storageService) //UserClassContext context)
         {
+            this._client = client;
             this._storageService = storageService;
             //this._userClassContext = context;
         }
@@ -137,7 +138,7 @@ namespace RoleManagerTest.Commands
             // gets the specified character from raider.io api
             var url = @"https://raider.io/api/v1/characters/profile?" + query;
 
-            var response = await client.GetAsync(url);
+            var response = await this._client.GetAsync(url);
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 return null;
