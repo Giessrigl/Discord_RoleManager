@@ -93,10 +93,7 @@ namespace RoleManager
 
             this.Commands = client.UseCommandsNext(commandsConfig);
 
-            this.Commands.RegisterCommands<AssignClassCommand>();
-            this.Commands.RegisterCommands<AssignRoleCommand>();
             this.Commands.RegisterCommands<PurgeCommand>();
-            this.Commands.RegisterCommands<ListCommandsCommand>();
             this.Commands.RegisterCommands<AssignCharacterCommand>();
             this.Commands.RegisterCommands<RankingCommand>();
             this.Commands.RegisterCommands<GetMPlusAffixesCommand>();

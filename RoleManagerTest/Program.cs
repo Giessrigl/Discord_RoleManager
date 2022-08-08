@@ -1,9 +1,5 @@
-﻿using DatabaseClasses.Models;
-using RoleManager;
-using RoleManagerTest;
+﻿using RoleManager;
 using RoleManagerTest.GoogleAPI;
-using RoleManagerTest.Services;
-using RoleManagerTest.Services.Interfaces;
 
 class Programm
 {
@@ -15,10 +11,9 @@ class Programm
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services
-            .AddSingleton(s => new SpreadsheetService("1m_ymqXxKclliNj-TJBgFhYsM7KoAwxEeVXwYhA7M3Nw", "Characters"))
-            .AddTransient<HttpClient>();
+            .AddSingleton<SpreadsheetService>()
+            .AddSingleton<HttpClient>();
         
-
         //builder.Services.AddLogging(config =>
         //{
         //    config.ClearProviders();

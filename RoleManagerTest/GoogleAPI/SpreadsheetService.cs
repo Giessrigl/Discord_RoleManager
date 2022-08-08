@@ -14,15 +14,15 @@ namespace RoleManagerTest.GoogleAPI
     {
         private SheetsService sheetService;
 
-        private string spreadsheetID;
-        private string tableName;
+        private readonly string spreadsheetID;
+        private readonly string tableName;
         private static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
         private static readonly string ApplicationName = Environment.GetEnvironmentVariable("ProjectName");
 
-        public SpreadsheetService(string spreadsheetID, string tableName)
+        public SpreadsheetService()
         {
-            this.spreadsheetID = spreadsheetID;
-            this.tableName = tableName;
+            this.spreadsheetID = "1m_ymqXxKclliNj-TJBgFhYsM7KoAwxEeVXwYhA7M3Nw";
+            this.tableName = "Characters";
             this.sheetService = GetSheetService().GetAwaiter().GetResult();
         }
 
