@@ -28,7 +28,7 @@ class Programm
         //});
 
         ServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
-        var googleService = serviceProvider.GetRequiredService<SpreadsheetService>();
+        var googleService = serviceProvider.GetService<SpreadsheetService>();
 
         var bot = new Bot(serviceProvider, builder.Configuration, googleService);
         builder.Services.AddSingleton(bot);
