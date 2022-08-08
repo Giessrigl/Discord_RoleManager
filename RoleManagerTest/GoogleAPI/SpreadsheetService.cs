@@ -17,7 +17,7 @@ namespace RoleManagerTest.GoogleAPI
         private readonly string spreadsheetID;
         private readonly string tableName;
         private static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
-        private static readonly string ApplicationName = Environment.GetEnvironmentVariable("ProjectName");
+        private static readonly string ApplicationName = Environment.GetEnvironmentVariable("PROJECT_NAME");
 
         public SpreadsheetService()
         {
