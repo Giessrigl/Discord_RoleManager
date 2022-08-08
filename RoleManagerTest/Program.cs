@@ -10,8 +10,10 @@ class Programm
 
         var builder = WebApplication.CreateBuilder(args);
 
+        var googleService = new SpreadsheetService();
+
         builder.Services
-            .AddSingleton<SpreadsheetService>()
+            .AddSingleton(googleService)
             .AddSingleton<HttpClient>();
         
         //builder.Services.AddLogging(config =>
@@ -28,7 +30,6 @@ class Programm
         //});
 
         ServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
-        var googleService = serviceProvider.GetService<SpreadsheetService>();
 
         var bot = new Bot(serviceProvider, builder.Configuration, googleService);
         builder.Services.AddSingleton(bot);
