@@ -23,7 +23,7 @@ namespace RoleManagerTest.GoogleAPI
         {
             this.spreadsheetID = "1m_ymqXxKclliNj-TJBgFhYsM7KoAwxEeVXwYhA7M3Nw";
             this.tableName = "Characters";
-            this.sheetService = GetSheetService().GetAwaiter().GetResult();
+            this.sheetService = GetSheetService().GetAwaiter().GetResult(); // ISSUE!!!
         }
 
         private async Task<SheetsService> GetSheetService()
@@ -49,7 +49,7 @@ namespace RoleManagerTest.GoogleAPI
                         Scopes,
                         "Bot",
                         CancellationToken.None,
-                        new FileDataStore(credPath, true));
+                        new FileDataStore(credPath));
                 //}
             }
             catch (FileNotFoundException e)
