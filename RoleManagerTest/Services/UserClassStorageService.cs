@@ -1,5 +1,4 @@
-﻿using DatabaseClasses.Models;
-using RoleManagerTest.Services.Interfaces;
+﻿using RoleManagerTest.Services.Interfaces;
 
 namespace RoleManagerTest.Services
 {

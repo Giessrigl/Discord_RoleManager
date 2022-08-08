@@ -4,24 +4,23 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Google.Apis.Sheets.v4;
 using Newtonsoft.Json;
+using RoleManagerTest.GoogleAPI;
 using RoleManagerTest.Services.Interfaces;
 
 namespace RoleManagerTest.Commands
 {
     class AssignCharacterCommand : BaseCommandModule
     {
-        //private readonly UserClassContext _userClassContext;
-
-        private readonly IStorageService<UserWoWChar> _storageService;
+        private readonly SpreadsheetService _googleService;
 
         private readonly HttpClient _client;
 
-        public AssignCharacterCommand(HttpClient client, IStorageService<UserWoWChar> storageService) //UserClassContext context)
+        public AssignCharacterCommand(HttpClient client, SpreadsheetService googleService) //UserClassContext context)
         {
             this._client = client;
-            this._storageService = storageService;
-            //this._userClassContext = context;
+            this._googleService = googleService;
         }
 
         [Command("MyNameIs")]
@@ -35,7 +34,7 @@ namespace RoleManagerTest.Commands
             [Description("The name of the server.")] string serverName, 
             [Description("The name of the region.")]string region = "eu")
         {
-            Console.WriteLine("assing character");
+            Console.WriteLine("assign character");
 
             if (string.IsNullOrWhiteSpace(characterName) || string.IsNullOrWhiteSpace(serverName))
                 return;
@@ -43,7 +42,7 @@ namespace RoleManagerTest.Commands
             if (ctx.Channel.Id != Statics.classes_and_roles_ChannelID)
                 return;
 
-            if (await this.IsCharacterAlreadyRegistered(characterName, serverName, region))
+            if (await this._googleService.IsCharacterRegistered(characterName, serverName, region))
             {
                 await ctx.Channel.SendMessageAsync("The character is already registered.").ConfigureAwait(false);
                 return;
@@ -67,7 +66,7 @@ namespace RoleManagerTest.Commands
             if (member == null)
                 return;
 
-            if (! await this.AddCharacterToUser(ctx.User.Id, characterName, serverName, region))
+            if (! await this.AddCharacterToUser(ctx.User.Id, characterName, serverName, region, className, specName))
                 return;
 
             try
@@ -95,10 +94,8 @@ namespace RoleManagerTest.Commands
         {
             Console.WriteLine("get character");
 
-            var WoWChar = new UserWoWChar();
-            //WoWChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == ctx.User.Id);
-            WoWChar = this._storageService.Storage.FirstOrDefault(x => x.DiscordID == ctx.User.Id);
-
+            var WoWChar = await this._googleService.GetCharacterOfUser(ctx.User.Id.ToString());
+            
             if (WoWChar == null)
                 return;
                 
@@ -239,61 +236,17 @@ namespace RoleManagerTest.Commands
             return blueprint.Build();
         }
 
-        private async Task<bool> AddCharacterToUser(ulong userID, string charName, string serverName, string region)
+        private async Task<bool> AddCharacterToUser(ulong userID, string charName, string serverName, string region, string className, string speccName)
         {
             try
             {
-                //var wowChar = this._userClassContext.UserClasses.FirstOrDefault(x => x.DiscordID == userID);
-                var wowChar = this._storageService.Storage.FirstOrDefault(x => x.DiscordID == userID);
-                if (wowChar == null)
-                {
-                    //await this._userClassContext.AddAsync(new UserWoWChar()
-                    //{
-                    //    DiscordID = userID,
-                    //    CharName = charName,
-                    //    ServerName = serverName,
-                    //    Region = region
-                    //}).ConfigureAwait(false);
-
-                    this._storageService.Storage.Add(new UserWoWChar()
-                    {
-                        DiscordID = userID,
-                        CharName = charName,
-                        ServerName = serverName,
-                        Region = region
-                    });
-                }
-                else
-                {
-                    wowChar.CharName = charName;
-                    wowChar.ServerName = serverName;
-                    wowChar.Region = region;
-
-                    //await Task.FromResult(this._userClassContext.Update(wowChar)).ConfigureAwait(false);
-                }
-
-                // await this._userClassContext.SaveChangesAsync().ConfigureAwait(false);
+                await this._googleService.AddCharacter(new SpreadsheetCharacter(userID.ToString(), region, serverName, charName, className, speccName));
                 return await Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 return await Task.FromResult(false);
             }
-        }
-
-        private async Task<bool> IsCharacterAlreadyRegistered(string charName, string serverName, string region)
-        {
-            //return await Task.FromResult(this._userClassContext.UserClasses.FirstOrDefault(x =>
-            //    x.CharName == charName &&
-            //    x.ServerName == serverName &&
-            //    x.Region == region
-            //) != null);
-
-            return await Task.FromResult(this._storageService.Storage.FirstOrDefault(x =>
-                x.CharName == charName &&
-                x.ServerName == serverName &&
-                x.Region == region
-            ) != null);
         }
     }
 }

@@ -3,9 +3,8 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using Newtonsoft.Json;
 using RoleManagerTest.Commands;
-using System.Text;
+using RoleManagerTest.GoogleAPI;
 
 namespace RoleManager
 {
@@ -29,7 +28,7 @@ namespace RoleManager
             private set;
         }
 
-        public Bot(IServiceProvider services, ConfigurationManager config)
+        public Bot(IServiceProvider services, ConfigurationManager config, SpreadsheetService googleService)
         {
             var token = Environment.GetEnvironmentVariable("Token");
             var prefix = Environment.GetEnvironmentVariable("Prefix");
@@ -53,6 +52,7 @@ namespace RoleManager
                 ConfigureCommands(client, services, prefix);
 
                 client.Ready += OnClientReady;
+                client.GuildMemberRemoved += googleService.DeleteChar;
 
                 client.ConnectAsync();
 
