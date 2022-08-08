@@ -1,13 +1,10 @@
-﻿using DatabaseClasses;
-using DatabaseClasses.Models;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
 using RoleManagerTest.GoogleAPI;
 using RoleManagerTest.Ranking;
-using RoleManagerTest.Services.Interfaces;
 
 namespace RoleManagerTest.Commands
 {
@@ -15,11 +12,12 @@ namespace RoleManagerTest.Commands
     {
         private readonly SpreadsheetService _googleService;
 
-        private readonly HttpClient client = new HttpClient();
+        private readonly HttpClient _client;
 
-        public RankingCommand(SpreadsheetService googleService) //UserClassContext context)
+        public RankingCommand(SpreadsheetService googleService, HttpClient client) //UserClassContext context)
         {
-            _googleService = googleService;
+            this._googleService = googleService;
+            this._client = client;
         }
 
         [Command("Ranking")]
@@ -132,7 +130,7 @@ namespace RoleManagerTest.Commands
             // gets the specified character from raider.io api
             var url = @"https://raider.io/api/v1/characters/profile?" + query;
 
-            var response = await client.GetAsync(url);
+            var response = await _client.GetAsync(url);
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 return null;
