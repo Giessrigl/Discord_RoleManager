@@ -12,7 +12,7 @@ namespace RoleManagerTest.GoogleAPI
 {
     public class SpreadsheetService
     {
-        private SheetsService sheetService;
+        private readonly SheetsService sheetService;
 
         private readonly string spreadsheetID;
         private readonly string tableName;
