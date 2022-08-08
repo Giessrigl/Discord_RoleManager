@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
+using RoleManagerTest.GoogleAPI;
 using RoleManagerTest.Ranking;
 using RoleManagerTest.Services.Interfaces;
 
@@ -12,19 +13,16 @@ namespace RoleManagerTest.Commands
 {
     public class RankingCommand : BaseCommandModule
     {
-        //private readonly UserClassContext _userClassContext;
-
-        private readonly IStorageService<UserWoWChar> _storageService;
+        private readonly SpreadsheetService _googleService;
 
         private readonly HttpClient client = new HttpClient();
 
-        public RankingCommand(IStorageService<UserWoWChar> storageService) //UserClassContext context)
+        public RankingCommand(SpreadsheetService googleService) //UserClassContext context)
         {
-            _storageService = storageService;
-            //this._userClassContext = context;
+            _googleService = googleService;
         }
 
-        [Command("ScoreRanking")]
+        [Command("Ranking")]
         [RequireGuild]
         [RequireBotPermissions(Permissions.SendMessages)]
         [Description("Returns the current M+ ranking of the discords members.")]
@@ -53,17 +51,19 @@ namespace RoleManagerTest.Commands
 
         private async Task<List<UserRanking>> GetRankingList(CommandContext ctx, bool compareByScore)
         {
-            // var userClasses = this._userClassContext.UserClasses.ToList();
-            var userClasses = this._storageService.Storage;
+            var userClasses = await this._googleService.GetSheetData();
 
             List<UserRanking> rankings = new List<UserRanking>();
             foreach (var userClass in userClasses)
             {
+                if (userClass == null)
+                    continue;
+
                 var charInfo = await this.GetCharacterInfo(userClass.CharName, userClass.ServerName, userClass.Region);
                 if (charInfo == null)
                     continue;
 
-                var member = await ctx.Guild.GetMemberAsync(userClass.DiscordID);
+                var member = await ctx.Guild.GetMemberAsync(ulong.Parse(userClass.DiscordID));
                 if (charInfo.Mythic_plus_highest_level_runs.Length == 0)
                     continue;
 

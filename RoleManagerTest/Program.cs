@@ -1,9 +1,7 @@
-﻿using DatabaseClasses;
-using DatabaseClasses.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.AzureAppServices;
+﻿using DatabaseClasses.Models;
 using RoleManager;
 using RoleManagerTest;
+using RoleManagerTest.GoogleAPI;
 using RoleManagerTest.Services;
 using RoleManagerTest.Services.Interfaces;
 
@@ -16,21 +14,10 @@ class Programm
 
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddSingleton<IStorageService<UserWoWChar>, UserClassStorageService<UserWoWChar>>();
-        builder.Services.AddTransient<HttpClient>();
-
-        OAuthExtensions.AddOAuth(new Microsoft.AspNetCore.Authentication.AuthenticationBuilder(builder.Services), "", options =>
-        {
-            options.ClientId = Environment.GetEnvironmentVariable("WoWClientID");
-            options.ClientSecret = Environment.GetEnvironmentVariable("WoWClientSecret");
-        });
-        builder.Services.AddAuthentication();
-
-        //builder.Services.AddDbContext<UserClassContext>(options =>
-        //{
-        //    options.UseSqlServer(connString,
-        //        x => x.MigrationsAssembly("DiscordBot.Migrations"));
-        //});
+        builder.Services
+            .AddSingleton(s => new SpreadsheetService("1m_ymqXxKclliNj-TJBgFhYsM7KoAwxEeVXwYhA7M3Nw", "Characters"))
+            .AddTransient<HttpClient>();
+        
 
         //builder.Services.AddLogging(config =>
         //{
@@ -46,25 +33,15 @@ class Programm
         //});
 
         ServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
+        var googleService = serviceProvider.GetRequiredService<SpreadsheetService>();
 
-        var bot = new Bot(serviceProvider, builder.Configuration);
+        var bot = new Bot(serviceProvider, builder.Configuration, googleService);
         builder.Services.AddSingleton(bot);
-
-        Console.WriteLine("Bot is running");
 
         var app = builder.Build();
         await app.RunAsync();
 
         Console.WriteLine("Bot terminated.");
     }
-
-    //public static IHostBuilder CreateHostBuilder(string[] args) =>
-    //    Host.CreateDefaultBuilder(args)
-    //        .ConfigureWebHostDefaults(webBuilder =>
-    //        {
-    //            webBuilder.UseStartup<Startup>();
-    //        });
-
-    
 }
 

@@ -2,7 +2,7 @@
 {
     public class UserWoWChar : Entity
     {
-        public ulong DiscordID { get; set; }
+        public string DiscordID { get; set; }
 
         public string CharName { get; set; }
 
