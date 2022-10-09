@@ -10,11 +10,11 @@ namespace RoleManagerTest.Commands
 {
     public class RankingCommand : BaseCommandModule
     {
-        private readonly SpreadsheetService _googleService;
+        private readonly MainCharacterSpreadsheetService _googleService;
 
         private readonly HttpClient _client;
 
-        public RankingCommand(SpreadsheetService googleService, HttpClient client) //UserClassContext context)
+        public RankingCommand(MainCharacterSpreadsheetService googleService, HttpClient client) //UserClassContext context)
         {
             this._googleService = googleService;
             this._client = client;
@@ -49,7 +49,8 @@ namespace RoleManagerTest.Commands
 
         private async Task<List<UserRanking>> GetRankingList(CommandContext ctx, bool compareByScore)
         {
-            var userClasses = await this._googleService.GetSheetData();
+            var data = await this._googleService.GetSheetData();
+            var userClasses = SpreadsheetMapper.MapFromRangeData(data);
 
             List<UserRanking> rankings = new List<UserRanking>();
             foreach (var userClass in userClasses)

@@ -1,4 +1,5 @@
 ﻿using RoleManager;
+using RoleManagerTest;
 using RoleManagerTest.GoogleAPI;
 
 class Programm
@@ -11,9 +12,14 @@ class Programm
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services
-            .AddSingleton<SpreadsheetService>()
-            .AddSingleton<HttpClient>();
-        
+            .AddSingleton<GoogleSheetServiceContainer>()
+            .AddSingleton<HttpClient>()
+            .AddTransient<MainCharacterSpreadsheetService>()
+            .AddTransient<AltSpreadsheetService>();
+
+
+        builder.Services.AddControllers();
+
         //builder.Services.AddLogging(config =>
         //{
         //    config.ClearProviders();
@@ -28,9 +34,8 @@ class Programm
         //});
 
         ServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
-        var googleService = serviceProvider.GetRequiredService<SpreadsheetService>();
-
-        var bot = new Bot(serviceProvider, builder.Configuration, googleService);
+        
+        var bot = new Bot(serviceProvider, builder.Configuration);
         builder.Services.AddSingleton(bot);
 
         var app = builder.Build();

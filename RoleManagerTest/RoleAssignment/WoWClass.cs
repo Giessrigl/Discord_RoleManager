@@ -1,6 +1,6 @@
 ﻿namespace RoleManagerTest
 {
-    public class WoWClass
+    public class WoWClass : IEquatable<WoWClass>
     {
         public WoWClass(string className, ulong id, ulong emojiID, Dictionary<string, string> roles)
         {
@@ -16,5 +16,12 @@
         public ulong EmojiID { get; private set; }
 
         public Dictionary<string, string> WoWRolesNames { get; private set; }
+
+        public bool Equals(WoWClass? other)
+        {
+            if (other == null) return false;
+
+            return this.ClassID.Equals(other.ClassID);
+        }
     }
 }

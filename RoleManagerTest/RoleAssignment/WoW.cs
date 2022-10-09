@@ -9,7 +9,7 @@ namespace RoleManagerTest
 {
     public static class WoW
     {
-        public static List<WoWClass> Classes = new List<WoWClass>()
+        public static readonly List<WoWClass> Classes = new()
             {
                 new WoWClass(
                     "Death Knight",
@@ -142,7 +142,7 @@ namespace RoleManagerTest
                     })
             };
 
-        public static List<WoWRole> Roles = new List<WoWRole>()
+        public static readonly List<WoWRole> Roles = new()
         {
             new WoWRole("Tank", 991106887510675568, 992066661509247047),
             new WoWRole("Heal", 991106988400443453, 992066646829174794),
@@ -150,7 +150,15 @@ namespace RoleManagerTest
             new WoWRole("Range", 991107142536937602, default)
         };
 
-        public static Dictionary<string, DiscordColor> ClassColors = new Dictionary<string, DiscordColor>()
+        public static readonly List<WoWRole> OffspecRoles = new()
+        {
+            new WoWRole("Tank Offspec", 1018618887627083838, default),
+            new WoWRole("Heal Offspec", 1018619027758792775, default),
+            new WoWRole("Melee Offspec", 1018619291991560252, default),
+            new WoWRole("Range Offspec", 1018619185858879488, default),
+        };
+
+        public static readonly Dictionary<string, DiscordColor> ClassColors = new()
         {
             { "Death Knight", new DiscordColor("#C41E3A")},
             { "Demon Hunter", new DiscordColor("#A330C9")},
@@ -166,5 +174,18 @@ namespace RoleManagerTest
             { "Warlock", new DiscordColor("#8788EE")},
             { "Warrior", new DiscordColor("#C69B6D")}
         };
+
+        // Verifies if the enterd Offspecc is valid for the class.
+        public static bool IsSpeccValid(string className, string specc)
+        {
+            var wowClass = Classes.FirstOrDefault(cl => cl.Name == className);
+            if (wowClass == null)
+                return false;
+
+            if (wowClass.WoWRolesNames.ContainsKey(specc))
+                return true;
+
+            return false;
+        }
     }
 }

@@ -5,6 +5,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using RoleManagerTest.Commands;
 using RoleManagerTest.GoogleAPI;
+using RoleManagerTest.GoogleAPI.Interfaces;
 
 namespace RoleManager
 {
@@ -28,7 +29,7 @@ namespace RoleManager
             private set;
         }
 
-        public Bot(IServiceProvider services, ConfigurationManager config, SpreadsheetService googleService)
+        public Bot(IServiceProvider services, ConfigurationManager config)
         {
             var token = Environment.GetEnvironmentVariable("Token");
             var prefix = Environment.GetEnvironmentVariable("Prefix");
@@ -49,10 +50,10 @@ namespace RoleManager
             {
                 var client = ConfigureAndConnectBot(token);
                 ConfigureInteractivity(client);
+
                 ConfigureCommands(client, services, prefix);
 
                 client.Ready += OnClientReady;
-                client.GuildMemberRemoved += googleService.DeleteChar;
 
                 client.ConnectAsync();
 
@@ -94,9 +95,13 @@ namespace RoleManager
             this.Commands = client.UseCommandsNext(commandsConfig);
 
             this.Commands.RegisterCommands<PurgeCommand>();
-            this.Commands.RegisterCommands<AssignCharacterCommand>();
+            this.Commands.RegisterCommands<AssignMainCharacterCommand>();
+            this.Commands.RegisterCommands<AssignAltCommand>();
             this.Commands.RegisterCommands<RankingCommand>();
             this.Commands.RegisterCommands<GetMPlusAffixesCommand>();
+            this.Commands.RegisterCommands<BotSettingsCommand>();
+
+            
         }
 
         private void ConfigureInteractivity(DiscordClient client)

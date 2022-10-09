@@ -8,8 +8,9 @@
         public string ClassName;
         public string SpeccName;
         public string ServerName;
+        public string Offspecc;
 
-        public SpreadsheetCharacter(string discordID, string region, string serverName, string charName, string className, string speccName)
+        public SpreadsheetCharacter(string discordID, string region, string serverName, string charName, string className, string speccName, string offspecc = "")
         {            
             this.DiscordID = discordID;
             this.Region = region;
@@ -17,6 +18,7 @@
             this.CharName = charName;
             this.ClassName = className;
             this.SpeccName = speccName;
+            this.Offspecc = offspecc;
         }
 
         public bool Equals(SpreadsheetCharacter? other)
