@@ -19,16 +19,7 @@ namespace RoleManagerTest.Commands
             if (ctx.Channel.Id != Statics.classes_and_roles_ChannelID)
                 return;
 
-            var classRole = ctx.Guild.GetRole(WoW.Seperators[0].Id);
-            var roleRole = ctx.Guild.GetRole(WoW.Seperators[1].Id);
-            foreach (var member in ctx.Guild.Members)
-            {
-                if (member.Value.Roles.FirstOrDefault(x => x.Id == classRole.Id) == null)
-                    await member.Value.GrantRoleAsync(classRole);
-
-                if (member.Value.Roles.FirstOrDefault(x => x.Id == roleRole.Id) == null)
-                    await member.Value.GrantRoleAsync(roleRole);
-            }
+            ctx.Client.GuildMemberAdded += AddSeperatorRoles;
 
             var interactivity = ctx.Client.GetInteractivity();
             var message = await ctx.Channel.SendMessageAsync(BuildDiscordMessage(ctx)).ConfigureAwait(false);
@@ -38,6 +29,17 @@ namespace RoleManagerTest.Commands
             interactivity.Client.MessageReactionAdded += AddRole;
 
             interactivity.Client.MessageReactionRemoved += RemoveRole;
+        }
+
+        private async Task AddSeperatorRoles(DiscordClient sender, GuildMemberAddEventArgs e)
+        {
+            var classRole = e.Guild.GetRole(WoW.Seperators[0].Id);
+            var roleRole = e.Guild.GetRole(WoW.Seperators[1].Id);
+            if (e.Member.Roles.FirstOrDefault(x => x.Id == classRole.Id) == default)
+                await e.Member.GrantRoleAsync(classRole);
+
+            if (e.Member.Roles.FirstOrDefault(x => x.Id == roleRole.Id) == default)
+                await e.Member.GrantRoleAsync(roleRole);
         }
 
         private async Task AddRole(DiscordClient sender, MessageReactionAddEventArgs e)
