@@ -5,8 +5,8 @@ class Programm
 {
     public static async Task Main(string[] args)
     {
-        EnvironmentVariables envVariables = new EnvironmentVariables();
-        envVariables.SetEnvironmentVariables();
+        //EnvironmentVariables envVariables = new EnvironmentVariables();
+        //envVariables.SetEnvironmentVariables();
 
         var builder = WebApplication.CreateBuilder(args);
 
