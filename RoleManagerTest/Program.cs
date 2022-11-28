@@ -1,19 +1,21 @@
 ﻿using RoleManager;
-using RoleManagerTest.GoogleAPI;
+using RoleManagerTest;
 
 class Programm
 {
     public static async Task Main(string[] args)
     {
-        //EnvironmentVariables envVariables = new EnvironmentVariables();
-        //envVariables.SetEnvironmentVariables();
+        EnvironmentVariables envVariables = new EnvironmentVariables();
+        envVariables.SetEnvironmentVariables();
 
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services
-            .AddSingleton<SpreadsheetService>()
             .AddSingleton<HttpClient>();
-        
+
+
+        builder.Services.AddControllers();
+
         //builder.Services.AddLogging(config =>
         //{
         //    config.ClearProviders();
@@ -28,9 +30,8 @@ class Programm
         //});
 
         ServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
-        var googleService = serviceProvider.GetRequiredService<SpreadsheetService>();
-
-        var bot = new Bot(serviceProvider, builder.Configuration, googleService);
+        
+        var bot = new Bot(serviceProvider, builder.Configuration);
         builder.Services.AddSingleton(bot);
 
         var app = builder.Build();
