@@ -1,21 +1,17 @@
 ﻿using RoleManager;
 using RoleManagerTest;
-using RoleManagerTest.GoogleAPI;
 
 class Programm
 {
     public static async Task Main(string[] args)
     {
-        //EnvironmentVariables envVariables = new EnvironmentVariables();
-        //envVariables.SetEnvironmentVariables();
+        EnvironmentVariables envVariables = new EnvironmentVariables();
+        envVariables.SetEnvironmentVariables();
 
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services
-            .AddSingleton<GoogleSheetServiceContainer>()
-            .AddSingleton<HttpClient>()
-            .AddTransient<MainCharacterSpreadsheetService>()
-            .AddTransient<AltSpreadsheetService>();
+            .AddSingleton<HttpClient>();
 
 
         builder.Services.AddControllers();

@@ -4,8 +4,6 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using RoleManagerTest.Commands;
-using RoleManagerTest.GoogleAPI;
-using RoleManagerTest.GoogleAPI.Interfaces;
 
 namespace RoleManager
 {
@@ -94,14 +92,12 @@ namespace RoleManager
 
             this.Commands = client.UseCommandsNext(commandsConfig);
 
+            //this.Commands.RegisterCommands<BotSettingsCommand>();
             this.Commands.RegisterCommands<PurgeCommand>();
-            this.Commands.RegisterCommands<AssignMainCharacterCommand>();
-            this.Commands.RegisterCommands<AssignAltCommand>();
-            this.Commands.RegisterCommands<RankingCommand>();
-            this.Commands.RegisterCommands<GetMPlusAffixesCommand>();
-            this.Commands.RegisterCommands<BotSettingsCommand>();
-
-            
+            //this.Commands.RegisterCommands<AssignMainCharacterCommand>();
+            //this.Commands.RegisterCommands<AssignAltCommand>();
+            this.Commands.RegisterCommands<ClassCommand>();
+            this.Commands.RegisterCommands<RoleCommand>();
         }
 
         private void ConfigureInteractivity(DiscordClient client)
