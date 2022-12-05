@@ -42,7 +42,27 @@ namespace RoleManagerTest.Commands
                 await e.Member.GrantRoleAsync(roleRole);
         }
 
-        private async Task AddRole(DiscordClient sender, MessageReactionAddEventArgs e)
+        internal static async Task ReactToAddingRole(DiscordClient sender, MessageReactionAddEventArgs e)
+        {
+            ulong messageId = 1047547207991185418;
+
+            if (e.Message.Id == messageId)
+            {
+                await AddRole(sender, e);
+            }
+        }
+
+        internal static async Task ReactToRemovingRole(DiscordClient sender, MessageReactionRemoveEventArgs e)
+        {
+            ulong messageId = 1047547207991185418;
+
+            if (e.Message.Id == messageId)
+            {
+                await RemoveRole(sender, e);
+            }
+        }
+
+        private static async Task AddRole(DiscordClient sender, MessageReactionAddEventArgs e)
         {
             var classToassign = WoW.Roles.FirstOrDefault(c => c.EmojiID == e.Emoji.Id);
             if (classToassign == default)
@@ -58,7 +78,7 @@ namespace RoleManagerTest.Commands
             await member.GrantRoleAsync(roleToassign);
         }
 
-        private async Task RemoveRole(DiscordClient sender, MessageReactionRemoveEventArgs e)
+        private static async Task RemoveRole(DiscordClient sender, MessageReactionRemoveEventArgs e)
         {
             var classToassign = WoW.Roles.FirstOrDefault(c => c.EmojiID == e.Emoji.Id);
             if (classToassign == default)

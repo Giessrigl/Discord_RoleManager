@@ -29,7 +29,7 @@ namespace RoleManagerTest.Commands
             interactivity.Client.MessageReactionRemoved += RemoveClass;
         }
 
-        private async Task AddClass(DiscordClient sender, MessageReactionAddEventArgs e)
+        private static async Task AddClass(DiscordClient sender, MessageReactionAddEventArgs e)
         {
             var classToassign = WoW.Classes.FirstOrDefault(c => c.EmojiID == e.Emoji.Id);
             if (classToassign == default)
@@ -45,7 +45,7 @@ namespace RoleManagerTest.Commands
             await member.GrantRoleAsync(roleToassign);
         }
 
-        private async Task RemoveClass(DiscordClient sender, MessageReactionRemoveEventArgs e)
+        private static async Task RemoveClass(DiscordClient sender, MessageReactionRemoveEventArgs e)
         {
             var classToassign = WoW.Classes.FirstOrDefault(c => c.EmojiID == e.Emoji.Id);
             if (classToassign == default)
@@ -86,6 +86,26 @@ namespace RoleManagerTest.Commands
                 lines);
 
             return message;
+        }
+
+        internal static async Task ReactToAddingClass(DiscordClient sender, MessageReactionAddEventArgs e)
+        {
+            ulong messageId = 1047547163409928193;
+
+            if (e.Message.Id == messageId)
+            {
+                await AddClass(sender, e);
+            }
+        }
+
+        internal static async Task ReactToRemovingClass(DiscordClient sender, MessageReactionRemoveEventArgs e)
+        {
+            ulong messageId = 1047547163409928193;
+
+            if (e.Message.Id == messageId)
+            {
+                await RemoveClass(sender, e);
+            }
         }
     }
 }

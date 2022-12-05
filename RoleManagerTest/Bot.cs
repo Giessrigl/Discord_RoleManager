@@ -52,6 +52,11 @@ namespace RoleManager
                 ConfigureCommands(client, services, prefix);
 
                 client.Ready += OnClientReady;
+                client.MessageReactionAdded += ClassCommand.ReactToAddingClass;
+                client.MessageReactionAdded += RoleCommand.ReactToAddingRole;
+
+                client.MessageReactionRemoved += ClassCommand.ReactToRemovingClass;
+                client.MessageReactionRemoved += RoleCommand.ReactToRemovingRole;
 
                 client.ConnectAsync();
 
