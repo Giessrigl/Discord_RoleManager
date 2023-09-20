@@ -5,4 +5,5 @@ Working features are:
 Initial assignment of user roles.
 Removing and Changing of user roles.
 
-User-Ids, character names and their roles are stored in a google spreadsheet for further usage (like getting their character profiles and rankings from the games API).
+Also added commands for assigning and changing roles based on the characters they are playing on specific servers (by retrieving information from the games API).
+User-Ids, character names, server names and their roles are stored in a google spreadsheet for further usage (like getting their character profiles and rankings from the games API without needing their characternames and servers again).
